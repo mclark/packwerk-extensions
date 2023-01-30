@@ -39,6 +39,9 @@ module Packwerk
         dependency = @constant_dependencies[reference.constant.name]
         if dependency
           package = Packwerk::ExternalDependencies::Package.from(reference.package)
+          external_dependencies_option = package.enforce_external_dependencies
+
+          return false if enforcement_disabled?(external_dependencies_option)
           return !package.external_dependencies.include?(dependency)
         end
 
@@ -75,6 +78,16 @@ module Packwerk
 
         # message.chomp
         'string'
+      end
+
+      private
+
+      sig do
+        params(external_dependencies_option: T.nilable(T.any(T::Boolean, String)))
+          .returns(T::Boolean)
+      end
+      def enforcement_disabled?(external_dependencies_option)
+        [false, nil].include?(external_dependencies_option)
       end
     end
   end
