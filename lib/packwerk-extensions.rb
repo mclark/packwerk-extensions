@@ -16,6 +16,8 @@ require 'packwerk/architecture/checker'
 require 'packwerk/architecture/package'
 require 'packwerk/architecture/validator'
 
+require 'packwerk/external_dependencies/checker'
+
 module Packwerk
   module Extensions
   end
