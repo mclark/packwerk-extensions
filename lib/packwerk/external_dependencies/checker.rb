@@ -65,19 +65,27 @@ module Packwerk
           .returns(String)
       end
       def message(reference)
-        # constant_package = Package.from(reference.constant.package, layers)
-        # referencing_package = Package.from(reference.package, layers)
+        source_desc = "'#{reference.package}'"
 
-        # message = <<~MESSAGE
-        #   Architecture layer violation: '#{reference.constant.name}' belongs to '#{reference.constant.package}', whose architecture layer type is "#{constant_package.layer}."
-        #   This constant cannot be referenced by '#{reference.package}', whose architecture layer type is "#{referencing_package.layer}."
-        #   Can we organize our code logic to respect the layers of these packs? See all layers in packwerk.yml.
+        message = <<~MESSAGE
+          External dependency violation: '#{reference.constant.name}' belongs to '#{reference.constant.package}', which is an external dependency of #{source_desc}.
+          Is there a different package to use instead, or should '#{reference.constant.package}' also be visible to #{source_desc}?
 
-        #   #{standard_help_message(reference)}
-        # MESSAGE
+          #{standard_help_message(reference)}
+        MESSAGE
 
-        # message.chomp
-        'string'
+        message.chomp
+      end
+
+      # TODO: Extract this out into a common helper, can call it StandardViolationHelpMessage.new(...) and implements .to_s
+      sig { params(reference: Reference).returns(String) }
+      def standard_help_message(reference)
+        standard_message = <<~MESSAGE.chomp
+          Inference details: this is a reference to #{reference.constant.name} which seems to be defined in #{reference.constant.location}.
+          To receive help interpreting or resolving this error message, see: https://github.com/Shopify/packwerk/blob/main/TROUBLESHOOT.md#Troubleshooting-violations
+        MESSAGE
+
+        standard_message.chomp
       end
 
       private
